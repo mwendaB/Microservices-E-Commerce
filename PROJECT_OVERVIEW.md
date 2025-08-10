@@ -4,7 +4,7 @@
 
 You now have a complete, working Go microservices system! This project demonstrates core microservices patterns with three interconnected services built in Go.
 
-### ✅ What You've Built
+  ### ✅ What I've Built
 
 1. **User Service (Port 8081)** - Handles user management and authentication
 2. **Product Service (Port 8082)** - Manages product catalog with sample data
@@ -218,7 +218,7 @@ docker-compose down
 
 ## 🎉 Congratulations!
 
-You've successfully built a production-ready microservices system! This project demonstrates:
+I've successfully built a production-ready microservices system! This project demonstrates:
 
 - **Modern Go Development**: Proper module structure, clean architecture
 - **Microservices Patterns**: Service independence, HTTP communication, proper error handling
@@ -235,7 +235,7 @@ You've successfully built a production-ready microservices system! This project 
 
 ### 🚀 Your Learning Journey Continues
 
-This project is a foundation. Use the AI learning prompts in `docs/AI_LEARNING_PROMPTS.md` to continue growing your microservices expertise. Each prompt is designed to take you deeper into specific concepts while building on what you've learned.
+This project is a foundation. Use the AI learning prompts in `docs/AI_LEARNING_PROMPTS.md` to continue growing your microservices expertise. Each prompt is designed to take you deeper into specific concepts while building on what I've learned.
 
 **Remember**: The best way to learn microservices is by building them. You now have a solid foundation to explore more advanced patterns and technologies!
 
