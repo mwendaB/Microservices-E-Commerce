@@ -32,9 +32,10 @@ start_service() {
     echo -e "${BLUE}Starting ${service_name} on port ${port}...${NC}"
     
     # Start service in background and capture PID
-    $binary_path > "logs/${service_name,,}.log" 2>&1 &
+    local log_name=$(echo "$service_name" | tr '[:upper:]' '[:lower:]')
+    $binary_path > "logs/${log_name}.log" 2>&1 &
     local pid=$!
-    echo $pid > "logs/${service_name,,}.pid"
+    echo $pid > "logs/${log_name}.pid"
     
     # Wait a moment and check if process is still running
     sleep 2
