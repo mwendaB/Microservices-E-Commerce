@@ -152,7 +152,7 @@ JWT_SECRET=your-secret-key-here
 ### 1. Initialize the Project
 ```bash
 # Navigate to project directory
-cd /Users/brianmwenda/Music/E-Commerce
+cd E-Commerce
 
 # Initialize Go modules for each service
 cd services/user-service && go mod init user-service && cd ../..
