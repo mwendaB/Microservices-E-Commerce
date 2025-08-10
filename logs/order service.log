@@ -1,0 +1,15 @@
+2025/08/10 22:19:04 🚀 Order Service starting on port 8083...
+2025/08/10 22:19:04 📚 API Documentation:
+2025/08/10 22:19:04   POST  /orders              - Create order
+2025/08/10 22:19:04   GET   /orders/{id}         - Get order by ID
+2025/08/10 22:19:04   GET   /orders/user/{id}    - Get orders by user
+2025/08/10 22:19:04   PATCH /orders/{id}/status  - Update order status
+2025/08/10 22:19:04   GET   /orders              - List all orders
+2025/08/10 22:19:04   GET   /health              - Health check
+2025/08/10 22:19:04 ---
+2025/08/10 22:19:04 🔗 Connected to User Service: http://localhost:8081
+2025/08/10 22:19:04 🔗 Connected to Product Service: http://localhost:8082
+2025/08/10 22:19:17 [GET] /health [::1]:50607 107.475µs
+2025/08/10 22:19:23 [GET] /health [::1]:50615 56.827µs
+2025/08/10 22:19:23 [GET] /orders [::1]:50616 133.692µs
+2025/08/10 22:19:23 [POST] /orders [::1]:50619 3.820797ms

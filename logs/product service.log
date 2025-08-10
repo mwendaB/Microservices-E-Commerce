@@ -1,0 +1,16 @@
+2025/08/10 22:18:59 🚀 Product Service starting on port 8082...
+2025/08/10 22:18:59 📚 API Documentation:
+2025/08/10 22:18:59   GET  /products               - List all products
+2025/08/10 22:18:59   GET  /products/{id}          - Get product by ID
+2025/08/10 22:18:59   POST /products               - Create product
+2025/08/10 22:18:59   PUT  /products/{id}          - Update product
+2025/08/10 22:18:59   PATCH /products/{id}/stock   - Update stock
+2025/08/10 22:18:59   GET  /products/category/{cat} - Get by category
+2025/08/10 22:18:59   GET  /health                 - Health check
+2025/08/10 22:18:59 ---
+2025/08/10 22:18:59 📦 Sample products loaded!
+2025/08/10 22:19:17 [GET] /health [::1]:50606 154.913µs
+2025/08/10 22:19:23 [GET] /health [::1]:50613 59.918µs
+2025/08/10 22:19:23 [GET] /products [::1]:50614 192.376µs
+2025/08/10 22:19:23 [GET] /products [::1]:50618 74.158µs
+2025/08/10 22:19:23 [GET] /products/7786235c-bf8e-4629-bdec-1ab0ddff4e30 [::1]:50621 42.84µs

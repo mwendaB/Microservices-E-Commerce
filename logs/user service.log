@@ -1,0 +1,14 @@
+2025/08/10 22:18:57 🚀 User Service starting on port 8081...
+2025/08/10 22:18:57 📚 API Documentation:
+2025/08/10 22:18:57   POST /users           - Create user
+2025/08/10 22:18:57   GET  /users/{id}      - Get user by ID
+2025/08/10 22:18:57   GET  /users           - List all users
+2025/08/10 22:18:57   POST /auth/login      - User login
+2025/08/10 22:18:57   GET  /health          - Health check
+2025/08/10 22:18:57 ---
+2025/08/10 22:19:11 [GET] /health [::1]:50602 119.109µs
+2025/08/10 22:19:23 [GET] /health [::1]:50610 163.931µs
+2025/08/10 22:19:23 [POST] /users [::1]:50611 195.592µs
+2025/08/10 22:19:23 [GET] /users [::1]:50612 46.415µs
+2025/08/10 22:19:23 [POST] /users [::1]:50617 62.189µs
+2025/08/10 22:19:23 [GET] /users/b721307e-f352-4510-81cc-0abcb7d42b0e [::1]:50620 29.16µs
