@@ -2,7 +2,21 @@
 
 A beginner-friendly toolkit for building microservices using Go. This project demonstrates a simple e-commerce system with three core services.
 
-## 🚀 Quick Start: What Are Microservices?
+> **Repository**: https://github.com/mwendaB/Microservices-E-Commerce  
+> **Clone with**: `git clone https://github.com/mwendaB/Microservices-E-Commerce.git`
+
+## � Table of Contents
+
+- [Getting Started](#-getting-started)
+- [Prerequisites](#-prerequisites)
+- [Quick Start Guide](#-quick-start-guide)
+- [Alternative Setup Methods](#️-alternative-setup-methods)
+- [Development Environment](#-development-environment-setup)
+- [API Documentation](#-api-documentation)
+- [Project Structure](#️-project-structure)
+- [Troubleshooting](#-troubleshooting)
+
+## �🚀 Quick Start: What Are Microservices?
 
 **Microservices** are a software architecture pattern where applications are built as a collection of small, independent services that communicate over well-defined APIs. Instead of building one large monolithic application, you create multiple smaller services that each handle a specific business function.
 
@@ -27,14 +41,37 @@ A beginner-friendly toolkit for building microservices using Go. This project de
 | **Failure** | App-wide failure | Isolated failures |
 | **Team Size** | Large teams | Small, focused teams |
 
-## 📋 Prerequisites
+## � Getting Started
+
+### 1. Clone the Repository
+
+```bash
+# Clone the project from GitHub
+git clone https://github.com/mwendaB/Microservices-E-Commerce.git
+
+# Navigate to the project directory
+cd Microservices-E-Commerce
+```
+
+### 2. Verify Project Structure
+After cloning, you should see:
+```
+Microservices-E-Commerce/
+├── services/           # Microservices (user, product, order)
+├── scripts/           # Build and run scripts
+├── docs/             # Documentation
+├── docker-compose.yml # Container orchestration
+└── README.md         # This file
+```
+
+## �📋 Prerequisites
 
 ### System Requirements
 
 #### Go Installation
 - **Go 1.21+** (latest stable version recommended)
 - **Git** for version control
-- **Docker** for containerization
+- **Docker** for containerization (optional)
 - **IDE**: VS Code with Go extension (recommended)
 
 #### Installation Steps
@@ -149,44 +186,144 @@ JWT_SECRET=your-secret-key-here
 
 ## 🚀 Quick Start Guide
 
-### 1. Initialize the Project
-```bash
-# Navigate to project directory
-cd E-Commerce
+### 1. Set Up the Development Environment
 
-# Initialize Go modules for each service
-cd services/user-service && go mod init user-service && cd ../..
-cd services/product-service && go mod init product-service && cd ../..
-cd services/order-service && go mod init order-service && cd ../..
-```
-
-### 2. Build and Run Services
 ```bash
-# Make scripts executable
+# After cloning, navigate to the project directory
+cd Microservices-E-Commerce
+
+# Make scripts executable (Linux/macOS)
 chmod +x scripts/*.sh
 
-# Build all services
+# Verify Go installation
+go version
+# Should show Go 1.21+ 
+```
+
+### 2. Install Dependencies and Build Services
+
+```bash
+# Build all services (this will also download dependencies)
 ./scripts/build.sh
 
-# Run all services
-./scripts/run.sh
+# You should see:
+# ✅ User Service built successfully
+# ✅ Product Service built successfully  
+# ✅ Order Service built successfully
 ```
 
-### 3. Test the API
+### 3. Start All Services
+
 ```bash
-# Test User Service
+# Start all microservices
+./scripts/run.sh
+
+# Services will start on:
+# - User Service: http://localhost:8081
+# - Product Service: http://localhost:8082
+# - Order Service: http://localhost:8083
+```
+
+### 4. Verify Everything is Working
+
+```bash
+# Run the test suite
+./scripts/test.sh
+
+# Or test individual services
+curl http://localhost:8081/health
+curl http://localhost:8082/health
+curl http://localhost:8083/health
+```
+
+### 5. Test the Complete System
+
+```bash
+# Create a user
 curl -X POST http://localhost:8081/users \
   -H "Content-Type: application/json" \
-  -d '{"name":"John Doe","email":"john@example.com"}'
+  -d '{"name":"John Doe","email":"john@example.com","password":"password123"}'
 
-# Test Product Service
-curl -X GET http://localhost:8082/products
+# List available products (comes with sample data)
+curl http://localhost:8082/products
 
-# Test Order Service
+# Create an order (replace USER_ID and PRODUCT_ID with actual values)
 curl -X POST http://localhost:8083/orders \
   -H "Content-Type: application/json" \
-  -d '{"user_id":"1","product_id":"1","quantity":2}'
+  -d '{"user_id":"USER_ID","product_id":"PRODUCT_ID","quantity":2}'
 ```
+
+## 🛠️ Alternative Setup Methods
+
+### Option 1: Manual Setup (if scripts don't work)
+
+```bash
+# Build each service individually
+cd services/user-service && go build -o bin/main ./cmd/main.go && cd ../..
+cd services/product-service && go build -o bin/main ./cmd/main.go && cd ../..
+cd services/order-service && go build -o bin/main ./cmd/main.go && cd ../..
+
+# Run each service in separate terminals
+./services/user-service/bin/main &     # Terminal 1
+./services/product-service/bin/main &  # Terminal 2  
+./services/order-service/bin/main &    # Terminal 3
+```
+
+### Option 2: Using Docker (Alternative)
+
+```bash
+# Build and run with Docker Compose
+docker-compose up --build
+
+# Services will be available on the same ports
+```
+
+## 🔧 Development Environment Setup
+
+### VS Code Extensions (Recommended)
+- **Go** (official Go extension)
+- **Docker**
+- **REST Client** (for API testing)
+- **GitLens**
+
+### Environment Variables Setup
+Create a `.env` file in the root directory:
+```env
+# Service Ports
+USER_SERVICE_PORT=8081
+PRODUCT_SERVICE_PORT=8082
+ORDER_SERVICE_PORT=8083
+
+# Database URLs (for future expansion)
+USER_DB_URL=memory
+PRODUCT_DB_URL=memory
+ORDER_DB_URL=memory
+
+# API Keys (for future use)
+JWT_SECRET=your-secret-key-here
+```
+
+## 🧹 Managing Services
+
+### Stop All Services
+```bash
+./scripts/stop.sh
+```
+
+### View Logs
+```bash
+# Service logs are saved in the logs/ directory
+tail -f logs/userservice.log
+tail -f logs/productservice.log
+tail -f logs/orderservice.log
+```
+
+### Troubleshooting
+If you encounter issues:
+1. Check `docs/TROUBLESHOOTING.md` for common problems
+2. Verify Go version: `go version` (needs 1.21+)
+3. Check if ports are available: `lsof -i :8081,8082,8083`
+4. Review service logs in the `logs/` directory
 
 ## 📚 API Documentation
 
