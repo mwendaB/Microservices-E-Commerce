@@ -381,6 +381,9 @@ docker-compose logs -f
 docker-compose down
 ```
 
+## 🔁 Cross-Reference
+For a curated subset aligned with evaluation criteria and AI-assisted refinement history, see `docs/TOOLKIT.md` Sections 6, 8, and 10.
+
 ## Getting Help
 
 If you encounter issues not covered here:

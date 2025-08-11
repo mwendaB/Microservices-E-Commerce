@@ -14,3 +14,7 @@
 2025/08/10 22:19:23 [GET] /products [::1]:50614 192.376µs
 2025/08/10 22:19:23 [GET] /products [::1]:50618 74.158µs
 2025/08/10 22:19:23 [GET] /products/7786235c-bf8e-4629-bdec-1ab0ddff4e30 [::1]:50621 42.84µs
+2025/08/11 15:33:29 [GET] /health [::1]:64488 2.229218ms
+2025/08/11 15:33:29 [GET] /products [::1]:64489 772.548µs
+2025/08/11 15:34:37 🛑 Shutting down Product Service...
+2025/08/11 15:34:37 ✅ Product Service shutdown complete

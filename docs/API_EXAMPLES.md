@@ -206,6 +206,27 @@ Valid statuses: `pending`, `confirmed`, `shipped`, `delivered`, `cancelled`
 curl http://localhost:8083/orders
 ```
 
+## 📦 Standard Response Envelope (Added)
+All services return JSON in the following envelope for consistency:
+
+Success:
+```json
+{
+  "success": true,
+  "message": "<human readable summary>",
+  "data": { }
+}
+```
+Error:
+```json
+{
+  "success": false,
+  "error": "<error message>",
+  "details": { }
+}
+```
+Refer to `docs/TOOLKIT.md` Section 6 & 7 for rationale and testing approach.
+
 ## 🔄 Complete Integration Test
 
 Here's a complete workflow that tests all services working together:

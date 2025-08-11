@@ -44,9 +44,9 @@ stop_service() {
 }
 
 # Stop all services
-stop_service "User Service" "logs/user service.pid"
-stop_service "Product Service" "logs/product service.pid"
-stop_service "Order Service" "logs/order service.pid"
+stop_service "User Service" "logs/user-service.pid"
+stop_service "Product Service" "logs/product-service.pid"
+stop_service "Order Service" "logs/order-service.pid"
 
 # Also kill any processes that might be running without PID files
 echo "🧹 Cleaning up any remaining processes..."

@@ -14,11 +14,11 @@ import (
 // OrderHandler handles HTTP requests related to orders
 type OrderHandler struct {
 	repo   repository.OrderRepository
-	client *client.ServiceClient
+	client client.OrderValidationClient
 }
 
 // NewOrderHandler creates a new order handler
-func NewOrderHandler(repo repository.OrderRepository, serviceClient *client.ServiceClient) *OrderHandler {
+func NewOrderHandler(repo repository.OrderRepository, serviceClient client.OrderValidationClient) *OrderHandler {
 	return &OrderHandler{
 		repo:   repo,
 		client: serviceClient,

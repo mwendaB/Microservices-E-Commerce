@@ -28,22 +28,23 @@ start_service() {
     local service_name=$1
     local binary_path=$2
     local port=$3
-    
+
+    # Portable lowercase + replace spaces with dashes
+    local log_base=$(echo "$service_name" | tr 'A-Z' 'a-z' | tr ' ' '-')
+
     echo -e "${BLUE}Starting ${service_name} on port ${port}...${NC}"
-    
-    # Start service in background and capture PID
-    local log_name=$(echo "$service_name" | tr '[:upper:]' '[:lower:]')
-    $binary_path > "logs/${log_name}.log" 2>&1 &
+
+    $binary_path > "logs/${log_base}.log" 2>&1 &
     local pid=$!
-    echo $pid > "logs/${log_name}.pid"
-    
-    # Wait a moment and check if process is still running
+    echo $pid > "logs/${log_base}.pid"
+
     sleep 2
     if kill -0 $pid 2>/dev/null; then
         echo -e "${GREEN}✅ ${service_name} started successfully (PID: ${pid})${NC}"
         return 0
     else
         echo -e "${RED}❌ Failed to start ${service_name}${NC}"
+        echo -e "${YELLOW}  └─ See logs/${log_base}.log for details${NC}"
         return 1
     fi
 }
@@ -73,6 +74,12 @@ sleep 2
 echo "🚀 Starting all services..."
 echo ""
 
+# Flag handling
+NOMONITOR=0
+if [ "$1" = "--no-monitor" ]; then
+  NOMONITOR=1
+fi
+
 # Start User Service (port 8081)
 start_service "User Service" "./services/user-service/bin/main" "8081"
 if [ $? -ne 0 ]; then
@@ -87,8 +94,8 @@ if [ $? -ne 0 ]; then
     exit 1
 fi
 
-# Wait a moment before starting Order Service (it depends on the other services)
-sleep 3
+# Shorter wait before starting Order Service to reduce race window
+sleep 1
 
 # Start Order Service (port 8083)
 start_service "Order Service" "./services/order-service/bin/main" "8083"
@@ -115,23 +122,22 @@ echo "🛑 Run './scripts/stop.sh' to stop all services"
 echo ""
 echo -e "${YELLOW}💡 Press Ctrl+C to stop monitoring (services will continue running)${NC}"
 
+if [ $NOMONITOR -eq 1 ]; then
+  exit 0
+fi
+
 # Monitor services (optional)
 while true; do
     sleep 10
-    
-    # Check if all services are still running
-    if ! kill -0 $(cat logs/user\ service.pid 2>/dev/null) 2>/dev/null; then
-        echo -e "${RED}❌ User Service stopped unexpectedly${NC}"
-        break
-    fi
-    
-    if ! kill -0 $(cat logs/product\ service.pid 2>/dev/null) 2>/dev/null; then
-        echo -e "${RED}❌ Product Service stopped unexpectedly${NC}"
-        break
-    fi
-    
-    if ! kill -0 $(cat logs/order\ service.pid 2>/dev/null) 2>/dev/null; then
-        echo -e "${RED}❌ Order Service stopped unexpectedly${NC}"
-        break
-    fi
+    # derive filenames
+    for name in "User Service" "Product Service" "Order Service"; do
+        log_base=$(echo "$name" | tr 'A-Z' 'a-z' | tr ' ' '-')
+        pid_file="logs/${log_base}.pid"
+        if [ ! -f "$pid_file" ] || ! kill -0 $(cat "$pid_file" 2>/dev/null) 2>/dev/null; then
+            echo -e "${RED}❌ ${name} stopped or missing (pid file: $pid_file)${NC}"
+            break 2
+        fi
+    done
+    # continue loop
+    :
 done

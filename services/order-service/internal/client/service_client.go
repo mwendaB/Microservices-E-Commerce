@@ -3,6 +3,7 @@ package client
 import (
 	"encoding/json"
 	"fmt"
+	"math"
 	"net/http"
 	"time"
 	"order-service/internal/models"
@@ -43,53 +44,55 @@ type ProductServiceResponse struct {
 // GetUser retrieves user information from the user service
 func (c *ServiceClient) GetUser(userID string) (*models.User, error) {
 	url := fmt.Sprintf("%s/users/%s", c.userServiceURL, userID)
-	
-	resp, err := c.httpClient.Get(url)
-	if err != nil {
-		return nil, fmt.Errorf("failed to call user service: %w", err)
+	var lastErr error
+	for attempt := 0; attempt < 3; attempt++ {
+		resp, err := c.httpClient.Get(url)
+		if err != nil {
+			lastErr = fmt.Errorf("failed to call user service: %w", err)
+		} else {
+			defer resp.Body.Close()
+			if resp.StatusCode == http.StatusOK {
+				var userResp UserServiceResponse
+				if err := json.NewDecoder(resp.Body).Decode(&userResp); err != nil {
+					return nil, fmt.Errorf("failed to decode user service response: %w", err)
+				}
+				if !userResp.Success {
+					return nil, fmt.Errorf("user service error: %s", userResp.Error)
+				}
+				return &userResp.Data, nil
+			}
+			lastErr = fmt.Errorf("user service returned status %d", resp.StatusCode)
+		}
+		time.Sleep(time.Duration(math.Pow(2, float64(attempt))) * 100 * time.Millisecond)
 	}
-	defer resp.Body.Close()
-
-	if resp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("user service returned status %d", resp.StatusCode)
-	}
-
-	var userResp UserServiceResponse
-	if err := json.NewDecoder(resp.Body).Decode(&userResp); err != nil {
-		return nil, fmt.Errorf("failed to decode user service response: %w", err)
-	}
-
-	if !userResp.Success {
-		return nil, fmt.Errorf("user service error: %s", userResp.Error)
-	}
-
-	return &userResp.Data, nil
+	return nil, lastErr
 }
 
 // GetProduct retrieves product information from the product service
 func (c *ServiceClient) GetProduct(productID string) (*models.Product, error) {
 	url := fmt.Sprintf("%s/products/%s", c.productServiceURL, productID)
-	
-	resp, err := c.httpClient.Get(url)
-	if err != nil {
-		return nil, fmt.Errorf("failed to call product service: %w", err)
+	var lastErr error
+	for attempt := 0; attempt < 3; attempt++ {
+		resp, err := c.httpClient.Get(url)
+		if err != nil {
+			lastErr = fmt.Errorf("failed to call product service: %w", err)
+		} else {
+			defer resp.Body.Close()
+			if resp.StatusCode == http.StatusOK {
+				var productResp ProductServiceResponse
+				if err := json.NewDecoder(resp.Body).Decode(&productResp); err != nil {
+					return nil, fmt.Errorf("failed to decode product service response: %w", err)
+				}
+				if !productResp.Success {
+					return nil, fmt.Errorf("product service error: %s", productResp.Error)
+				}
+				return &productResp.Data, nil
+			}
+			lastErr = fmt.Errorf("product service returned status %d", resp.StatusCode)
+		}
+		time.Sleep(time.Duration(math.Pow(2, float64(attempt))) * 100 * time.Millisecond)
 	}
-	defer resp.Body.Close()
-
-	if resp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("product service returned status %d", resp.StatusCode)
-	}
-
-	var productResp ProductServiceResponse
-	if err := json.NewDecoder(resp.Body).Decode(&productResp); err != nil {
-		return nil, fmt.Errorf("failed to decode product service response: %w", err)
-	}
-
-	if !productResp.Success {
-		return nil, fmt.Errorf("product service error: %s", productResp.Error)
-	}
-
-	return &productResp.Data, nil
+	return nil, lastErr
 }
 
 // ValidateOrderItems validates all items in an order by checking with services

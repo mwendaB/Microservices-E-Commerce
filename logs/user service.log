@@ -12,3 +12,11 @@
 2025/08/10 22:19:23 [GET] /users [::1]:50612 46.415µs
 2025/08/10 22:19:23 [POST] /users [::1]:50617 62.189µs
 2025/08/10 22:19:23 [GET] /users/b721307e-f352-4510-81cc-0abcb7d42b0e [::1]:50620 29.16µs
+2025/08/11 15:33:29 [GET] /health [::1]:64485 3.26252ms
+2025/08/11 15:33:29 Error creating user: user with this email already exists
+2025/08/11 15:33:29 [POST] /users [::1]:64486 1.388185ms
+2025/08/11 15:33:29 [GET] /users [::1]:64487 2.109834ms
+2025/08/11 15:33:29 Error creating user: user with this email already exists
+2025/08/11 15:33:29 [POST] /users [::1]:64492 77.586µs
+2025/08/11 15:34:37 🛑 Shutting down User Service...
+2025/08/11 15:34:37 ✅ User Service shutdown complete

@@ -57,18 +57,51 @@ test_api() {
     fi
 }
 
+# Utility: wait for service health
+wait_for() {
+  local name=$1
+  local url=$2
+  local attempts=${3:-20}
+  local sleep_secs=${4:-0.5}
+  for ((i=1;i<=attempts;i++)); do
+    if curl -s -o /dev/null "$url"; then
+      echo -e "${GREEN}✅ ${name} healthy (${url})${NC}"
+      return 0
+    fi
+    sleep $sleep_secs
+  done
+  echo -e "${RED}❌ ${name} not healthy after ${attempts} attempts (${url})${NC}"
+  return 1
+}
+
 # Run unit tests for all services
 echo "🔬 Running unit tests..."
-echo ""
 
-# Note: Since we don't have actual test files yet, we'll skip unit tests
-# In a real project, you would have *_test.go files
-echo -e "${YELLOW}📝 Unit tests not implemented yet (create *_test.go files)${NC}"
+echo "  User Service repository tests"
+( cd services/user-service && go test ./internal/repository -count=1 ) || unit_failed=true
+
+echo "  Product Service repository tests"
+( cd services/product-service && go test ./internal/repository -count=1 ) || unit_failed=true
+
+echo "  Order Service repository tests"
+( cd services/order-service && go test ./internal/repository -count=1 ) || unit_failed=true
+
+if [ "$unit_failed" = true ]; then
+  echo -e "${RED}❌ Some unit tests failed${NC}"
+else
+  echo -e "${GREEN}✅ Unit tests passed${NC}"
+fi
+
 echo ""
 
 # Test API endpoints if services are running
 echo "🌐 Testing API endpoints..."
 echo ""
+
+# Wait for health before tests
+wait_for "User Service" "http://localhost:8081/health" || api_test_passed=false
+wait_for "Product Service" "http://localhost:8082/health" || api_test_passed=false
+wait_for "Order Service" "http://localhost:8083/health" || api_test_passed=false
 
 # Check if services are running by testing health endpoints
 api_test_passed=true
@@ -123,14 +156,20 @@ echo "  Creating an order that requires all services..."
 
 # First, create a user and get their ID
 echo "  1. Creating user..."
+unique_email="integration+$(date +%s%N)@example.com"
 user_response=$(curl -s -X POST http://localhost:8081/users \
                      -H "Content-Type: application/json" \
-                     -d '{"name":"Integration Test User","email":"integration@example.com","password":"password123"}')
+                     -d '{"name":"Integration Test User","email":"'"${unique_email}"'","password":"password123"}')
 
-user_id=$(echo "$user_response" | grep -o '"id":"[^"]*"' | cut -d'"' -f4)
+# Prefer jq if available for robust parsing
+if command -v jq >/dev/null 2>&1; then
+  user_id=$(echo "$user_response" | jq -r '.data.id // empty')
+else
+  user_id=$(echo "$user_response" | grep -o '"id":"[^\"]*"' | cut -d'"' -f4 | head -1)
+fi
 
 if [ -n "$user_id" ]; then
-    echo -e "${GREEN}  ✅ User created with ID: ${user_id}${NC}"
+    echo -e "${GREEN}  ✅ User created with ID: ${user_id}${NC} (email: ${unique_email})"
     
     # Get a product ID
     echo "  2. Getting product..."
@@ -161,6 +200,7 @@ if [ -n "$user_id" ]; then
     fi
 else
     echo -e "${RED}  ❌ Failed to create user${NC}"
+    echo "  Response: $user_response"  # show response for debugging
     api_test_passed=false
 fi
 
