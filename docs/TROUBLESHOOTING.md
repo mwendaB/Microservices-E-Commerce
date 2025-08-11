@@ -2,6 +2,18 @@
 
 This document covers the most common errors beginners face when working with this Go microservices project and their solutions.
 
+## 🧭 Intern Diagnostic Framework (Read First)
+When something breaks, avoid random fixes. Apply this sequence:
+1. Classify Layer: (Env | Build | Runtime | Network | Data | Test).
+2. Reproduce Minimally: Re-run single failing command (copy exact curl or build cmd).
+3. Observe Evidence: Error text, exit code, logs, timestamp.
+4. Form Single Hypothesis: One-sentence cause guess.
+5. Test Fix: Smallest reversible change (config tweak, restart, code revert).
+6. Confirm & Document: Did symptom disappear? Add note to personal log.
+
+Prompt to Use if Stuck:
+"Given this Go microservice error output: <PASTE>, classify which layer (Env/Build/Runtime/Network/Data/Test) and list top 3 likely root causes plus 1 verification command each."
+
 ## 🔧 Setup & Installation Issues
 
 ### Issue 1: Go Not Installed or Wrong Version
@@ -331,6 +343,30 @@ func corsMiddleware(next http.Handler) http.Handler {
 - Use Git Bash or WSL for shell scripts
 - Check Windows Defender firewall
 
+## 🔍 Layer Classification Cheat Sheet (Intern)
+| Layer | Typical Symptoms | First Command |
+|-------|------------------|---------------|
+| Env | go not found, wrong version | `go version` |
+| Build | cannot find module, undefined symbol | `go mod tidy` |
+| Runtime | panic, bind error, nil pointer | `tail -n 50 logs/<svc>.log` |
+| Network | connection refused, timeout | `curl -v http://localhost:PORT/health` |
+| Data | not found, duplicate errors | Inspect repository logic / test data |
+| Test | flaky, race warnings | `go test -race ./...` |
+
+## 🧪 Race Condition Quick Check
+Run with race detector when adding concurrency:
+```bash
+go test -race ./...
+```
+If race found, identify shared mutable state without lock; add `sync.RWMutex` or channel pattern.
+
+## 🔁 Prompt Patterns for Troubleshooting
+| Scenario | Prompt Template |
+|----------|-----------------|
+| Unknown error text | "Explain this Go error and typical root causes: <ERROR>" |
+| Flaky test | "Suggest 3 hypotheses for intermittent failure in test <NAME> and verification steps." |
+| Performance concern | "Profile strategy for endpoint <ENDPOINT> under load; which tools and why?" |
+
 ## 🛠️ Development Best Practices
 
 ### Code Organization
@@ -395,3 +431,6 @@ If you encounter issues not covered here:
 5. Use the debugging commands provided above
 
 Remember: Most issues are due to incorrect setup, missing dependencies, or typos in configuration. Take your time and verify each step!
+
+---
+Intern-focused enhancements added; use prompt templates to accelerate accurate diagnosis.

@@ -2,6 +2,31 @@
 
 This document contains the complete set of prompts you can use throughout your 5-day capstone project to maximize your learning with AI assistance.
 
+## 🧑‍🏫 How to Use This (Intern Guide)
+Workflow per Prompt:
+1. State Intent (what you want to achieve) in your own words first.
+2. Copy the closest template, fill placeholders with specifics.
+3. Paste ONLY relevant code snippets (15–40 lines) if asking for code critique.
+4. Run suggested changes locally; if fails, capture exact error and iterate with a new, narrower prompt.
+5. Log outcome in your personal Prompt Log table.
+
+Prompt Log Table Template:
+| Time | Intent | Prompt Used (Short) | Applied? | Result | Next Action |
+|------|--------|---------------------|---------|--------|-------------|
+
+Reflection Cadence: Every end-of-day answer: "What pattern of mistakes did I repeat today and how will I detect it earlier tomorrow?" Add answer below table.
+
+Escalation Ladder (When Prompt Results Are Too Generic):
+1. Add error snippet.
+2. Add context of what already tried.
+3. Ask for diagnostics before code.
+4. Request contrast: "Show difference between current and improved version focusing on X (e.g., error wrapping)."
+
+Anti-Patterns (Avoid):
+- "Fix all issues in my code" (too broad).
+- Pasting entire repo.
+- Ignoring compile errors before next prompt.
+
 ## 📋 Master Prompt Categories
 
 ### Day 1: Foundation & Setup

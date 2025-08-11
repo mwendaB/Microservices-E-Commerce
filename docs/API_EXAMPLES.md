@@ -2,6 +2,17 @@
 
 This document provides comprehensive examples for testing the Go microservices API endpoints.
 
+## 👩‍💻 How to Read These Examples (Intern Guide)
+Each example shows: (a) The curl command, (b) Expected shape of response (envelope), (c) What to check if it fails.
+If a command fails:
+1. Re-run with `-v` for verbose output.
+2. Hit the service `/health` endpoint.
+3. Inspect the corresponding service log in `logs/`.
+4. Validate JSON payload (use https://jqplay.org for quick syntax check).
+
+Prompt Pattern to Extend Examples:
+"Generate curl examples for updating a product including invalid JSON and not found edge cases using my existing response envelope." — Use results to enrich below.
+
 ## 🚀 Quick Start Testing
 
 ### 1. Health Checks
@@ -32,7 +43,14 @@ Expected response:
 
 ## 👤 User Service API (Port 8081)
 
-### Create User
+### Create User (Beginner Notes)
+Goal: Persist a new user in in-memory store. Validation: name/email/password required.
+Failure Modes:
+- Missing field -> error envelope with message
+- Duplicate email -> conflict-style error envelope
+- Malformed JSON -> JSON decode error
+Recovery Checklist: Correct JSON, ensure unique email (add +timestamp), retry.
+
 ```bash
 curl -X POST http://localhost:8081/users \
   -H "Content-Type: application/json" \
@@ -207,7 +225,18 @@ curl http://localhost:8083/orders
 ```
 
 ## 📦 Standard Response Envelope (Added)
-All services return JSON in the following envelope for consistency:
+All services return JSON in the following envelope for consistency.
+
+Design Intent (Explain Like I'm New):
+- success (bool): Fast path check; if false, client can branch immediately.
+- message/error: Human friendly summary; `error` only present on failures.
+- data: Actual payload; omit sensitive internals.
+- details: Optional map for field-level or contextual error info.
+
+When Adding New Endpoints:
+1. Always wrap success path in envelope.
+2. Provide specific, stable error messages (avoid leaking stack traces).
+3. Include contextual IDs (order_id, user_id) where useful for client correlation.
 
 Success:
 ```json
@@ -226,6 +255,15 @@ Error:
 }
 ```
 Refer to `docs/TOOLKIT.md` Section 6 & 7 for rationale and testing approach.
+
+## 🧪 Extending Tests with Prompts (Intern Section)
+Use AI to scaffold new negative test flows.
+Example Prompt:
+"List 5 edge case curl tests for order creation including invalid status transitions and explain expected HTTP codes using the existing envelope." — Add chosen tests to a personal scratch markdown then implement.
+
+Track Added Tests Table:
+| Date | Endpoint | New Case | Why Valuable | Implemented (Y/N) |
+|------|----------|----------|--------------|-------------------|
 
 ## 🔄 Complete Integration Test
 
@@ -285,99 +323,13 @@ curl -s http://localhost:8083/orders/$ORDER_ID | jq .
 echo "✅ Integration test complete!"
 ```
 
-## 🐛 Error Testing
-
-### Test Invalid Requests
-
-#### Invalid User Creation
-```bash
-# Missing required fields
-curl -X POST http://localhost:8081/users \
-  -H "Content-Type: application/json" \
-  -d '{"name": "John"}'  # Missing email and password
-```
-
-#### Invalid Product ID
-```bash
-curl http://localhost:8082/products/invalid-id
-```
-
-#### Invalid Order Creation
-```bash
-# Non-existent user
-curl -X POST http://localhost:8083/orders \
-  -H "Content-Type: application/json" \
-  -d '{
-    "user_id": "non-existent-user",
-    "items": [{"product_id": "some-product", "quantity": 1}]
-  }'
-```
-
-## 📋 Postman Collection
-
-You can import these examples into Postman:
-
-1. Create a new collection called "Go Microservices"
-2. Add the following requests:
-
-### User Service Collection
-- GET Health Check: `http://localhost:8081/health`
-- POST Create User: `http://localhost:8081/users`
-- GET List Users: `http://localhost:8081/users`
-- GET User by ID: `http://localhost:8081/users/{{user_id}}`
-- POST Login: `http://localhost:8081/auth/login`
-
-### Product Service Collection
-- GET Health Check: `http://localhost:8082/health`
-- GET List Products: `http://localhost:8082/products`
-- GET Product by ID: `http://localhost:8082/products/{{product_id}}`
-- POST Create Product: `http://localhost:8082/products`
-- PUT Update Product: `http://localhost:8082/products/{{product_id}}`
-
-### Order Service Collection
-- GET Health Check: `http://localhost:8083/health`
-- POST Create Order: `http://localhost:8083/orders`
-- GET Order by ID: `http://localhost:8083/orders/{{order_id}}`
-- GET User Orders: `http://localhost:8083/orders/user/{{user_id}}`
-- PATCH Update Status: `http://localhost:8083/orders/{{order_id}}/status`
-
-## 🔧 Advanced Testing
-
-### Load Testing with Apache Bench
-```bash
-# Test user service health endpoint
-ab -n 1000 -c 10 http://localhost:8081/health
-
-# Test product listing
-ab -n 500 -c 5 http://localhost:8082/products
-```
-
-### Using HTTPie (Alternative to curl)
-```bash
-# Install httpie: pip install httpie
-
-# Create user
-http POST localhost:8081/users name="Jane Doe" email="jane@example.com" password="password123"
-
-# Get products
-http GET localhost:8082/products
-
-# Create order
-http POST localhost:8083/orders user_id="USER_ID" items:='[{"product_id":"PRODUCT_ID","quantity":1}]'
-```
-
-### Testing with jq for JSON Processing
-```bash
-# Get all product names
-curl -s http://localhost:8082/products | jq '.data[].name'
-
-# Get user email from login response
-curl -s -X POST http://localhost:8081/auth/login \
-  -H "Content-Type: application/json" \
-  -d '{"email":"john@example.com","password":"password123"}' | jq '.data.user.email'
-```
-
----
+## 🐛 Error Testing (How to Systematically Explore)
+1. Start with valid request.
+2. Remove one required field (expect validation error).
+3. Corrupt JSON (missing quote) (expect decode error).
+4. Use non-existent ID (expect not found error).
+5. Repeat with high concurrency (later load testing).
+Log each finding in your prompt/testing journal.
 
 ## 🚨 Common Response Formats
 
@@ -408,3 +360,16 @@ curl -s -X POST http://localhost:8081/auth/login \
 - `500` - Internal Server Error (server issues)
 
 Remember to check the logs if any test fails: `tail -f logs/*.log`
+
+## 🧭 Troubleshooting Flow (If Any Example Fails)
+| Step | Action | Purpose |
+|------|--------|---------|
+| 1 | Add `-v` to curl | See HTTP status + headers |
+| 2 | Hit `/health` | Confirm service alive |
+| 3 | Tail log | Spot panic or validation failure |
+| 4 | Re-run with minimal JSON | Isolate payload issue |
+| 5 | Compare vs working example | Spot drift |
+| 6 | Form hypothesis & adjust | Intentional learning |
+
+---
+Intern additions complete; continue refining with your prompt log.

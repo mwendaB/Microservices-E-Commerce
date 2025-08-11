@@ -2,6 +2,43 @@
 
 A beginner-friendly toolkit for building microservices using Go. This project demonstrates a simple e-commerce system with three core services.
 
+## 👩‍💻 Intern Onboarding Path (First 60–180 Minutes)
+Time-box your ramp-up. Follow these steps sequentially:
+1. 0–15m: Skim `PROJECT_OVERVIEW.md` (high-level) then glance at directory tree below.
+2. 15–30m: Run `./scripts/build.sh && ./scripts/run.sh` and hit all three health endpoints. If any fail, open `logs/<service>.log`.
+3. 30–45m: Create a user + list products + create an order using curl (see API section). Trace each request path in code (handler -> repository) for one service.
+4. 45–75m: Read `docs/TOOLKIT.md` Section 6 (Prompt Journal) + Intern Learning Journey. Identify ONE improvement task (e.g., add request_id logging placeholder) and write it down.
+5. 75–120m: Run tests `./scripts/test.sh`. Purposefully break one repository test (change expected error) to see failure output; revert.
+6. 120–180m: Draft a personal prompt in a new entry (see Prompt Logging below) and attempt a small refactor (e.g., add validation). Commit only after tests green.
+
+### Quick Mental Model
+User Service = identity & auth stub. Product Service = catalog. Order Service = orchestration validating user + product before storing order.
+
+### Prompt Logging Template (Add to your notes)
+| When | Goal | Prompt Used | Result | Follow-up Needed |
+|------|------|-------------|--------|------------------|
+| 2025-08-11 10:05 | Understand repo pattern | "Explain repository pattern in user-service" | Clear mental model | None |
+
+### If You Get Stuck (Diagnostic Ladder)
+1. What changed last? (File / config / script)
+2. Re-run health endpoints.
+3. Check service log for stack trace or bind error.
+4. Simplify input (minimal JSON) & retry.
+5. Run single service tests: `cd services/<svc> && go test ./...`.
+6. Form one-sentence hypothesis; test it.
+
+### Common Early Mistakes
+| Mistake | Symptom | Fix |
+|---------|---------|-----|
+| Editing wrong service folder | Build cannot find module | Ensure you are inside `services/<service>` when running go commands |
+| Hard-coded duplicate user email | 409-like error on create | Use unique email or timestamp generator |
+| Assuming services start instantly | Order calls fail with connection refused | Use health polling (already in scripts) |
+
+### Using AI Effectively
+Do: Ask for structure, edge cases, reasoning. Provide existing code snippet context. Iterate.
+Don’t: Paste entire file ask “improve?” (creates noisy diffs) or accept code without running tests.
+Reflection: After each AI assist, summarize what changed in one sentence in your prompt log.
+
 ## 🚀 Quick Start: What Are Microservices?
 
 **Microservices** are a software architecture pattern where applications are built as a collection of small, independent services that communicate over well-defined APIs. Instead of building one large monolithic application, you create multiple smaller services that each handle a specific business function.

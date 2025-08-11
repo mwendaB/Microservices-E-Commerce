@@ -4,7 +4,14 @@
 
 You now have a complete, working Go microservices system! This project demonstrates core microservices patterns with three interconnected services built in Go.
 
-  ### ✅ What I've Built
+## 🧑‍💻 Intern Orientation Snapshot
+Read Order: 1) This file (overview) 2) `README.md` Quick Start 3) Run services 4) `docs/TOOLKIT.md` (Sections 6 & 8) 5) `docs/AI_LEARNING_PROMPTS.md` to plan first prompt log entry.
+Time Box Goal: Reach first successful order creation (user+product+order flow) within 45 minutes. If you exceed, review Troubleshooting Ladder in `docs/TROUBLESHOOTING.md`.
+
+Prompt to Use After First Run:
+"Summarize gaps in my understanding of the repository pattern given this snippet: <PASTE CODE> and suggest 2 refactor steps." Log outcome.
+
+### ✅ What I've Built
 
 1. **User Service (Port 8081)** - Handles user management and authentication
 2. **Product Service (Port 8082)** - Manages product catalog with sample data
